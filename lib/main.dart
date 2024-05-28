@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Home/organizer_Home.dart';
 import 'package:flutter_application_1/authentication/login/login.dart';
 import 'package:flutter_application_1/authentication/signup/signup.dart';
 import 'package:flutter_application_1/welcome/Welcom.dart';
@@ -25,8 +26,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: WelcomePage2(),
-      //home: LoginPage(),
+     // home: WelcomePage2(),
+      home: OrganizerHomePage(),
     );
   }
 }
