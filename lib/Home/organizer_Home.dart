@@ -125,7 +125,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                                    ); */
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Color.fromARGB(255, 210, 36, 24),
                         minimumSize: Size(250, 70),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
