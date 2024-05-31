@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Home/BloodShapePainter.dart';
+import 'package:flutter_application_1/Home/organizerForm.dart';
 import 'package:shape_maker/shape_maker.dart';
 import 'package:shape_maker/shape_maker_painter.dart';
 
@@ -11,6 +14,37 @@ class OrganizerHomePage extends StatefulWidget {
 }
 
 class _OrganizerHomePageState extends State<OrganizerHomePage> {
+  late String firstName = ''; // State variable to store first name
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFirstName(); // Call the method to fetch first name when widget initializes
+  }
+
+  void fetchFirstName() async {
+    try {
+      // Get current user's ID from Firebase Authentication
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        // Use the retrieved user ID in Firestore query
+        var userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          setState(() {
+            firstName = userDoc['firstName'];
+          });
+        } else {
+          print('Document does not exist');
+        }
+      } else {
+        print('User is not authenticated');
+      }
+    } catch (e) {
+      print('Error fetching first name: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +75,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                     alignment: Alignment.center,
                     children: [
                       Text(
-                        'Hello Achintha',
+                        'Hello $firstName',
                         style: TextStyle(
                           fontSize: 30,
                           color: Colors.white,
@@ -116,13 +150,11 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        /* Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginPage()
-                                              ),
-                                   ); */
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const OrganizerFormPage()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 210, 36, 24),
@@ -139,7 +171,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                       child: Text(
                         'Organize\nBlood Camp',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           color: Colors.white,
                           fontFamily: 'MontserratBold',
                           fontWeight: FontWeight.bold,

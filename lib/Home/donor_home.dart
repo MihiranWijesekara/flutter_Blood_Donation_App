@@ -25,7 +25,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
               children: [
                 Container(
                   width: 412,
-                  height: 200,
+                  height: 160,
                   decoration: BoxDecoration(
                     color: Color(0xFFFF1A1A),
                     borderRadius: BorderRadius.only(
@@ -74,7 +74,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                     ),
                     Expanded(
                       child: Container(
-                        height: 230,
+                        height: 220,
                         width: 50,
                         decoration: BoxDecoration(
                           color: Color.fromARGB(255, 255, 255, 255),
@@ -97,7 +97,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                                 child: Text(
                                   'Total Blood Camp',
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     color: Colors.black,
                                     fontFamily: 'MontserratBold',
                                   ),
@@ -124,7 +124,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                     ),
                     Expanded(
                       child: Container(
-                        height: 230,
+                        height: 220,
                         width: 20,
                         decoration: BoxDecoration(
                           color: Color.fromARGB(255, 255, 255, 255),
@@ -147,7 +147,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                                 child: Text(
                                   'Donor status',
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     color: Colors.black,
                                     fontFamily: 'MontserratBold',
                                   ),
@@ -186,7 +186,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                 ),
                 Expanded(
                   child: Container(
-                    height: 100,
+                    height: 120,
                     width: 300,
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -204,7 +204,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                             child: Text(
                               'Total Participate\n Blood Camp',
                               style: TextStyle(
-                                fontSize: 20,
+                                fontSize: 15,
                                 color: Colors.black,
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.bold,
@@ -256,7 +256,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                       child: Text(
                         'Find Blood\n Camp',
                         style: TextStyle(
-                          fontSize: 22,
+                          fontSize: 20,
                           color: Colors.white,
                           fontFamily: 'MontserratBold',
                           fontWeight: FontWeight.bold,
