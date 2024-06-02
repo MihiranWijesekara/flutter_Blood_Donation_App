@@ -3,8 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Home/BloodShapePainter.dart';
 import 'package:flutter_application_1/Home/organizerForm.dart';
-import 'package:shape_maker/shape_maker.dart';
-import 'package:shape_maker/shape_maker_painter.dart';
 
 class OrganizerHomePage extends StatefulWidget {
   const OrganizerHomePage({Key? key}) : super(key: key);
@@ -14,7 +12,8 @@ class OrganizerHomePage extends StatefulWidget {
 }
 
 class _OrganizerHomePageState extends State<OrganizerHomePage> {
-  late String firstName = ''; // State variable to store first name
+  late String firstName = '';
+  late String profileImageUrl = '';
 
   @override
   void initState() {
@@ -33,6 +32,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
         if (userDoc.exists) {
           setState(() {
             firstName = userDoc['firstName'];
+            profileImageUrl = userDoc['profileImage'];
           });
         } else {
           print('Document does not exist');
@@ -48,7 +48,85 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10), // Adjust the height as needed
+                  CircleAvatar(
+                    radius: 60, // Adjust the radius as needed
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: profileImageUrl.isNotEmpty
+                        ? NetworkImage(profileImageUrl)
+                        : AssetImage('assets/images/signuUP_profile.png')
+                            as ImageProvider,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 20,
+            ),
+
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.send),
+                title: Text('Request'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.location_on_rounded),
+                title: Text('Location'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Organize Blood Camp'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OrganizerFormPage()),
+                );
+              },
+            ),
+            // Add more menu items here
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Container(
           color: Colors.transparent,
@@ -85,14 +163,18 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                       Positioned(
                         top: 8,
                         left: 10,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            print('Menu button pressed');
+                        child: Builder(
+                          builder: (context) {
+                            return IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                size: 40,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                            );
                           },
                         ),
                       ),
@@ -158,7 +240,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 210, 36, 24),
-                        minimumSize: Size(250, 70),
+                        minimumSize: Size(300, 60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(18),
@@ -171,7 +253,7 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
                       child: Text(
                         'Organize\nBlood Camp',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 17,
                           color: Colors.white,
                           fontFamily: 'MontserratBold',
                           fontWeight: FontWeight.bold,
