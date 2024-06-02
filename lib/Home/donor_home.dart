@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Home/BloodShapePainter.dart';
+import 'package:flutter_application_1/Home/organizerForm.dart';
 
 class DonorHomePage extends StatefulWidget {
   const DonorHomePage({Key? key}) : super(key: key);
@@ -9,13 +12,131 @@ class DonorHomePage extends StatefulWidget {
 }
 
 class _DonorHomePageState extends State<DonorHomePage> {
+  late String firstName = '';
+  late String profileImageUrl = '';
+  late String bloodGroup = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserInfo();
+  }
+
+  void fetchUserInfo() async {
+    try {
+      // Get current user's ID from Firebase Authentication
+      String? uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        // Use the retrieved user ID in Firestore query
+        var userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          setState(() {
+            firstName = userDoc['firstName'];
+            profileImageUrl = userDoc['profileImage'];
+            bloodGroup = userDoc['bloodType'];
+          });
+        } else {
+          print('Document does not exist');
+        }
+      } else {
+        print('User is not authenticated');
+      }
+    } catch (e) {
+      print('Error fetching first name: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.red,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 10),
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: profileImageUrl.isNotEmpty
+                        ? NetworkImage(profileImageUrl)
+                        : AssetImage('assets/images/signuUP_profile.png')
+                            as ImageProvider,
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: 20,
+            ),
+
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.send),
+                title: Text('Request'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.location_on_rounded),
+                title: Text('Location'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            Container(
+              height: 70, // Set the height here
+              width: double.infinity, // Set the width here
+              child: ListTile(
+                leading: Icon(Icons.home),
+                title: Text('Home'),
+                onTap: () {
+                  // Navigate to home
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.event),
+              title: Text('Organize Blood Camp'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OrganizerFormPage()),
+                );
+              },
+            ),
+            // Add more menu items here
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Container(
-          color: Colors.transparent,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFFF1A1A), Colors.white],
+            ),
+          ),
           child: Container(
             width: double.infinity,
             height: double.infinity,
@@ -39,7 +160,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                     alignment: Alignment.center,
                     children: [
                       Text(
-                        'Hello Achintha',
+                        'Hello $firstName',
                         style: TextStyle(
                           fontSize: 30,
                           color: Colors.white,
@@ -49,14 +170,18 @@ class _DonorHomePageState extends State<DonorHomePage> {
                       Positioned(
                         top: 8,
                         left: 10,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            print('Menu button pressed');
+                        child: Builder(
+                          builder: (context) {
+                            return IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                size: 40,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                            );
                           },
                         ),
                       ),
@@ -95,7 +220,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                               padding: EdgeInsets.only(bottom: 140),
                               child: Center(
                                 child: Text(
-                                  'Total Blood Camp',
+                                  'Your Blood Group',
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.black,
@@ -111,7 +236,7 @@ class _DonorHomePageState extends State<DonorHomePage> {
                                 size: Size(100, 100),
                                 painter: BloodShapePainter(
                                   bgColor: Colors.red,
-                                  text: '20',
+                                  text: '$bloodGroup',
                                 ),
                               ),
                             ),

@@ -29,6 +29,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: WelcomePage2());
-    //home: OrganizerHomePage());
+    //home: DonorHomePage());
   }
 }
