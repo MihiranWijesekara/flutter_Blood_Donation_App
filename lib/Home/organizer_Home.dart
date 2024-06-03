@@ -129,13 +129,13 @@ class _OrganizerHomePageState extends State<OrganizerHomePage> {
       ),
       body: SafeArea(
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFFF1A1A), Colors.white],
-            ),
-          ),
+          // decoration: BoxDecoration(
+          //  gradient: LinearGradient(
+          //    begin: Alignment.topCenter,
+          //    end: Alignment.bottomCenter,
+          //    colors: [Color(0xFFFF1A1A), Colors.white],
+          //  ),
+          // ),
           color: Colors.transparent,
           child: Container(
             width: double.infinity,
