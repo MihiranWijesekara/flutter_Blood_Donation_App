@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_application_1/Home/donor_home.dart';
-import 'package:flutter_application_1/Home/organizerForm.dart';
-import 'package:flutter_application_1/Home/organizer_Home.dart';
-import 'package:flutter_application_1/authentication/signup/signup.dart';
+import 'package:flutter_application_1/provider/auth_provider.dart';
+import 'package:flutter_application_1/screens/donorScreen.dart';
+import 'package:flutter_application_1/screens/organize_Screen.dart';
+import 'package:flutter_application_1/screens/signUp_screen.dart';
+import 'package:provider/provider.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,40 +27,31 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final errorMessage = await authProvider.loginWithEmailAndPassword(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    if (errorMessage != null) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $errorMessage')),
       );
-
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance 
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .get();
-
-      if (userDoc.exists) {
-        String accountType = userDoc['userType'];
-        if (accountType == 'Donor') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DonorHomePage()),
-          );
-        } else if (accountType == 'Blood Camp Organizer') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => OrganizerHomePage()),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User data not found')),
+    } else {
+      final userModel = authProvider.userModel;
+      if (userModel.userType == 'Donor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DonorScreenPage()),
+        );
+      } else if (userModel.userType == 'Blood Camp Organizer') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OrganizerHomeScreenPage()),
         );
       }
-    } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.message}')),
-      );
     }
   }
 
@@ -72,12 +63,12 @@ class _LoginPageState extends State<LoginPage> {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          margin: EdgeInsets.symmetric(vertical: 10),
-          color: Color(0xFFFF1A1A),
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          color: const Color(0xFFFF1A1A),
           child: Column(
             children: [
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Sign In',
                 style: TextStyle(
                   color: Colors.white,
@@ -86,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   fontFamily: 'KohSantepheap',
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Image.asset(
                 'assets/images/images1.png',
                 width: 150,
@@ -104,10 +95,10 @@ class _LoginPageState extends State<LoginPage> {
                         key: _formKey,
                         child: Column(
                           children: [
-                            SizedBox(height: 50),
+                            const SizedBox(height: 50),
                             TextFormField(
                               controller: _emailController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: 'Email',
                                 filled: true,
                                 fillColor: Colors.white,
@@ -120,10 +111,10 @@ class _LoginPageState extends State<LoginPage> {
                                     vertical: 20.0, horizontal: 20.0),
                               ),
                             ),
-                            SizedBox(height: 30),
+                            const SizedBox(height: 30),
                             TextFormField(
                               controller: _passwordController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 hintText: 'Password',
                                 filled: true,
                                 fillColor: Colors.white,
@@ -137,17 +128,17 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               obscureText: true,
                             ),
-                            SizedBox(height: 40),
+                            const SizedBox(height: 40),
                             ElevatedButton(
                               onPressed: _login,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                minimumSize: Size(200, 55),
+                                minimumSize: const Size(200, 55),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Login',
                                 style: TextStyle(
                                   fontSize: 20,
@@ -157,8 +148,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 30),
-                            Text(
+                            const SizedBox(height: 30),
+                            const Text(
                               'You Do Not Have Account',
                               style: TextStyle(
                                 color: Colors.white,
@@ -166,25 +157,26 @@ class _LoginPageState extends State<LoginPage> {
                                 fontFamily: 'KohSantepheap',
                               ),
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const SignUpPage()),
+                                      builder: (context) =>
+                                          const SignUpScreenPage()),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
-                                minimumSize: Size(170, 50),
+                                minimumSize: const Size(170, 50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(100),
-                                  side:
-                                      BorderSide(color: Colors.black, width: 1),
+                                  side: const BorderSide(
+                                      color: Colors.black, width: 1),
                                 ),
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Register',
                                 style: TextStyle(
                                   fontSize: 18,

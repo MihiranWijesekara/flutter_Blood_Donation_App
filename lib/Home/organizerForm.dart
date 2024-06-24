@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Home/organizer_Home.dart';
+import 'package:flutter_application_1/models/camp_model.dart';
+import 'package:flutter_application_1/provider/camp_provider.dart';
+
+import 'package:provider/provider.dart';
 
 class OrganizerFormPage extends StatefulWidget {
   const OrganizerFormPage({Key? key}) : super(key: key);
@@ -11,10 +14,72 @@ class OrganizerFormPage extends StatefulWidget {
 class _OrganizerFormPageState extends State<OrganizerFormPage> {
   final _formKey = GlobalKey<FormState>();
   final ScrollController _controllerOne = ScrollController();
-  String _date = '';
-  String _address = '';
-  String _currentLocation = '';
-  String _description = '';
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  String _selectedDate = '';
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _locationController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  void _saveForm() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedDate.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please choose a date')),
+        );
+        return;
+      }
+
+      final campProvider = Provider.of<CampProvider>(context, listen: false);
+
+      CampModel campModel = CampModel(
+        title: _titleController.text.trim(),
+        location: _locationController.text.trim(),
+        description: _descriptionController.text.trim(),
+        date: _selectedDate,
+      );
+
+      String? result =
+          await campProvider.saveCampDataToFirebase(campModel: campModel);
+
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Camp data saved successfully!')),
+        );
+        _titleController.clear();
+        _locationController.clear();
+        _descriptionController.clear();
+        setState(() {
+          _selectedDate = '';
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result)),
+        );
+      }
+    }
+  }
+
+  void _showDatePicker() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate.toLocal().toString().split(' ')[0];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +98,7 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                 Container(
                   width: 411,
                   height: 128,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFFF1A1A),
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(0),
@@ -45,7 +110,7 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Organize Blood Camp',
                         style: TextStyle(
                           fontSize: 24,
@@ -63,12 +128,7 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                             color: Colors.white,
                           ),
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const OrganizerHomePage()),
-                            );
+                            Navigator.of(context).pop();
                           },
                         ),
                       ),
@@ -91,72 +151,59 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                           child: Column(
                             children: <Widget>[
                               TextFormField(
-                                // controller: _emailController,
+                                controller: _titleController,
                                 decoration: InputDecoration(
-                                  hintText: 'Date',
+                                  hintText: 'Title',
                                   filled: true,
                                   fillColor: Colors.white,
                                   border: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(100)),
                                     borderSide: BorderSide(
-                                      color: Colors
-                                          .black, // Set the border color to black
-                                      width:
-                                          2.0, // You can adjust the border width
+                                      color: Colors.black,
+                                      width: 2.0,
                                     ),
                                   ),
                                   contentPadding: EdgeInsets.symmetric(
-                                      vertical: 20.0, horizontal: 145.0),
+                                      vertical: 20.0, horizontal: 20.0),
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a title';
+                                  }
+                                  return null;
+                                },
                               ),
                               SizedBox(height: 16.0),
                               TextFormField(
-                                // controller: _emailController,
+                                controller: _locationController,
                                 decoration: InputDecoration(
-                                  hintText: 'Address',
+                                  hintText: 'Location',
                                   filled: true,
                                   fillColor: Colors.white,
                                   border: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(100)),
                                     borderSide: BorderSide(
-                                      color: Colors
-                                          .black, // Set the border color to black
-                                      width:
-                                          2.0, // You can adjust the border width
+                                      color: Colors.black,
+                                      width: 2.0,
                                     ),
                                   ),
                                   contentPadding: EdgeInsets.symmetric(
-                                      vertical: 20.0, horizontal: 130.0),
+                                      vertical: 20.0, horizontal: 20.0),
                                 ),
-                              ),
-                              SizedBox(height: 16.0),
-                              TextFormField(
-                                // controller: _emailController,
-                                decoration: InputDecoration(
-                                  hintText: 'Current Location',
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(100)),
-                                    borderSide: BorderSide(
-                                      color: Colors
-                                          .black, // Set the border color to black
-                                      width:
-                                          2.0, // You can adjust the border width
-                                    ),
-                                  ),
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 20.0, horizontal: 100.0),
-                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a location';
+                                  }
+                                  return null;
+                                },
                               ),
                               SizedBox(height: 16.0),
                               Container(
                                 height: 200,
                                 child: TextFormField(
-                                  // controller: _emailController,
+                                  controller: _descriptionController,
                                   decoration: InputDecoration(
                                     hintText: 'Description',
                                     filled: true,
@@ -169,38 +216,60 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                                         bottomLeft: Radius.circular(50),
                                       ),
                                       borderSide: BorderSide(
-                                        color: Colors
-                                            .black, // Set the border color to black
-                                        width:
-                                            2.0, // You can adjust the border width
+                                        color: Colors.black,
+                                        width: 2.0,
                                       ),
                                     ),
                                     contentPadding: EdgeInsets.symmetric(
                                       vertical: 100.0,
-                                      horizontal:
-                                          120.0, // Adjusted horizontal padding to be more reasonable
+                                      horizontal: 20.0,
                                     ),
                                   ),
-                                  maxLines:
-                                      null, // Allows the TextFormField to expand to the specified height
-                                  minLines:
-                                      6, // Minimum number of lines to display (approximately 200 height)
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter a description';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 16.0),
+                              Container(
+                                width: 230,
+                                child: OutlinedButton(
+                                  onPressed: _showDatePicker,
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor:
+                                        Color.fromARGB(255, 235, 232, 232),
+                                    padding: EdgeInsets.all(17.0),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    side: BorderSide(
+                                      color: Color.fromARGB(255, 98, 94, 94),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _selectedDate.isEmpty
+                                        ? 'Choose Date'
+                                        : _selectedDate,
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 79, 76, 76),
+                                      fontSize: 18,
+                                    ),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 20.0),
                               ElevatedButton(
-                                onPressed: () {
-                                  if (_formKey.currentState != null &&
-                                      _formKey.currentState!.validate()) {
-                                    _formKey.currentState!.save();
-                                    // Add your form submission logic here
-                                  }
-                                },
+                                onPressed: _saveForm,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                       Color.fromARGB(255, 210, 36, 24),
                                   minimumSize: Size(300, 60),
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(18),
                                       topRight: Radius.circular(18),
@@ -209,7 +278,7 @@ class _OrganizerFormPageState extends State<OrganizerFormPage> {
                                     ),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Organize\nBlood Camp',
                                   style: TextStyle(
                                     fontSize: 17,
