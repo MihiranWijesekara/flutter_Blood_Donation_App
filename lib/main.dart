@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-          ChangeNotifierProvider(create: (_) => CampProvider()),
+        ChangeNotifierProvider(create: (_) => CampProvider()),
       ],
       child: MaterialApp(
         title: 'Blood Donation Champ',
@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         home: SignUpScreenPage(),
-        // home: RequestScreenPage(),
       ),
     );
   }

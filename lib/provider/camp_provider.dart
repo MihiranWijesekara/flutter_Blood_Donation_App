@@ -60,5 +60,23 @@ class CampProvider extends ChangeNotifier {
       return 0;
     }
   }
-}
 
+  Future<void> fetchCampData(String docId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      DocumentSnapshot campDoc =
+          await _firebaseFirestore.collection('blood_camps').doc(docId).get();
+      if (campDoc.exists) {
+        _campModel = CampModel.fromMap(campDoc.data() as Map<String, dynamic>);
+        notifyListeners();
+      }
+    } catch (e) {
+      print('Error fetching camp data: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
